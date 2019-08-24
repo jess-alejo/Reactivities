@@ -28,9 +28,14 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(options =>
+            services.AddDbContext<DataContext>(service =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                service.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddCors(service =>
+            {
+                service.AddPolicy("CorsPolicy", policy =>
+                policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -49,6 +54,7 @@ namespace API
             }
 
             // app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
             app.UseMvc();
         }
     }
